@@ -7,7 +7,7 @@ const searchFor = "desenvolvedor";
 const jobsList = [];
 
 (async () => {
-    const browser = await pup.launch({ headless: false });
+    const browser = await pup.launch();
     const page = await browser.newPage();
 
     console.log("init");
@@ -20,10 +20,22 @@ const jobsList = [];
 
     //pesquisar a vaga necessária
     await page.type('input[aria-label="Pesquisar vaga"]', searchFor);
-    await page.keyboard.press("Enter");
+
+    await Promise.all([
+        page.waitForNavigation(),
+        await page.keyboard.press("Enter")
+    ]);
+
+    
+    await page.waitForSelector('.sc-a3bd7ea-0.HCzvP > a');
+    const jobLinks = await page.$$eval('.sc-a3bd7ea-0.HCzvP > a', element => element.map(link => link.href));
+    
+    //Adicionando os links à lista
+    jobsList.push(...jobLinks);
 
     await page.waitForTimeout(5000);
-
     await browser.close();
     console.log("everything ok here");
 })();
+
+console.log(jobsList);
