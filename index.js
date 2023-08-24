@@ -1,4 +1,5 @@
 import pup from "puppeteer";
+import fs from "fs";
 
 const url = "https://portal.gupy.io/";
 const searchFor = "desenvolvedor";
@@ -32,6 +33,10 @@ const jobsList = [];
     
     //Adicionando os links à lista
     jobsList.push(...jobLinks);
+
+    //Adicionando ao CSV
+    const csvData = jobsList.join('\n');
+    fs.writeFileSync('jobs.csv', csvData, 'utf8');
 
     await page.waitForTimeout(5000);
     await browser.close();
