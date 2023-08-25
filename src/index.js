@@ -7,7 +7,7 @@ const jobsList = [];
 let maxScroll = 0;
 
 (async () => {
-  const browser = await pup.launch({ headless: false });
+  const browser = await pup.launch();
   const page = await browser.newPage();
 
   console.log("init");
@@ -41,7 +41,7 @@ let maxScroll = 0;
   }
 
   //Controle da quantidade de Scrolls para poder extrair dos dados da página de pesquisa
-  while (maxScroll < 5) {
+  while (maxScroll < 10) {
     const initialJobsCount = jobsList.length;
     await scrollBottom();
     await page.waitForTimeout(1000);
@@ -65,16 +65,15 @@ let maxScroll = 0;
     const company = companies[i];
 
     await page.goto(link);
-    await page.waitForSelector('h1');
+    await page.waitForTimeout(3000);
 
     const title = await page.$eval('h1', (element) => element.innerText);
-    const publicationDate = await page.$eval(".sc-673bf470-2.fWfcGH > p",(element) => element.innerText);
-    const location = await page.$eval('.sc-673bf470-5.sc-673bf470-6.dMZQvc.viDKT > span', (element) => element.innerText);
+    const publicationDate = await page.$eval(".sc-673bf470-0.fDZpxX > div > p",(element) => element.innerText);
+    
 
     const obj = {
       company,
       title,
-      location,
       publicationDate,
       link,
     };
