@@ -3,17 +3,17 @@ import fs from "fs";
 
 const url = "https://portal.gupy.io/";
 const searchFor = "desenvolvedor";
-
-// lista que recebe os anúncios de emprego
 const jobsList = [];
+let maxScroll = 0;
 
 (async () => {
-  const browser = await pup.launch();
+  const browser = await pup.launch({ headless: false });
   const page = await browser.newPage();
 
   console.log("init");
 
   await page.goto(url);
+
   console.log("url running");
 
   // Clicar no botão para abrir a barra de pesquisa e pesquisando a vaga, mantendo a navegação aberta
@@ -40,30 +40,52 @@ const jobsList = [];
     });
   }
 
-  // Carregar mais vagas até atingir 100
-  while (jobsList.length < 100) {
+  //Controle da quantidade de Scrolls para poder extrair dos dados da página de pesquisa
+  while (maxScroll < 5) {
     const initialJobsCount = jobsList.length;
     await scrollBottom();
+    await page.waitForTimeout(1000);
+    maxScroll++;
+  }
 
-    // Aguardando carregamento por 2 seg
-    await page.waitForTimeout(2000);
+  // extraindo os links
+  const newJobLinks = await page.$$eval(
+    ".sc-97da41ab-0.zVzmE > li > div > a",
+    (links) => links.map((link) => link.href)
+  );
+  const companies = await page.$$eval(
+    ".sc-efBctP.dpAAMR.sc-a3bd7ea-6.cQyvth",
+    (el) => el.map((element) => element.innerText)
+  );
 
-    // extraindo os links
-    const newJobLinks = await page.$$eval(
-      ".sc-97da41ab-0.zVzmE > li > div > a",
-      (links) => links.map((link) => link.href)
+  //Depois, as demais informações, fazendo um loop para que vá em cada link buscar as demais informações, 
+  //e também dando push nos nomes das empresas para suas respectivas vagas pelo index
+  for (let i = 0; i < newJobLinks.length; i++) {
+    const link = newJobLinks[i];
+    const company = companies[i];
+
+    await page.goto(link);
+    await page.waitForSelector('h1');
+
+    const title = await page.$eval('h1', (element) => element.innerText);
+    const publicationDate = await page.$eval(".sc-673bf470-2.fWfcGH > p",(element) => element.innerText);
+    const location = await page.$eval('.sc-673bf470-5.sc-673bf470-6.dMZQvc.viDKT > span', (element) => element.innerText);
+
+    const obj = {
+      company,
+      title,
+      location,
+      publicationDate,
+      link,
+    };
+
+    // Verificando se o objeto já existe na jobsList
+    const isDuplicate = jobsList.some(
+      (existingObj) => existingObj.link === obj.link
     );
 
-    // Validando que os links são unicos
-    for (const link of newJobLinks) {
-      if (!jobsList.includes(link)) {
-        jobsList.push(link);
-      }
-    }
-
-    // Parar o loop quando não adicionar nenhum link (a partir das 100 unidades)
-    if (jobsList.length === initialJobsCount) {
-      break;
+    if (!isDuplicate) {
+      jobsList.push(obj);
     }
   }
 
@@ -73,10 +95,15 @@ const jobsList = [];
   }
 
   // Adicionar ao CSV
-  const csvData = jobsList.join("\n");
-  fs.writeFileSync("jobs.csv", csvData, "utf8");
+  const csvData = jobsList
+    .map((job) => {
+      return Object.values(job)
+        .map((value) => `"${value}"`)
+        .join(",");
+    })
+    .join("\n");
 
-  //   console.log("Collected job links:", jobsList);
+  fs.writeFileSync("jobs.csv", csvData, "utf8");
 
   await browser.close();
   console.log("Everything is done.");
