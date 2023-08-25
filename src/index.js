@@ -7,7 +7,7 @@ const jobsList = [];
 let maxScroll = 0;
 
 (async () => {
-  const browser = await pup.launch();
+  const browser = await pup.launch({headless: false});
   const page = await browser.newPage();
 
   console.log("init");
@@ -40,68 +40,55 @@ let maxScroll = 0;
     });
   }
 
-  //Controle da quantidade de Scrolls para poder extrair dos dados da página de pesquisa
-  while (maxScroll < 10) {
+  // Carregar mais vagas até atingir 100 e aguardando carregamento por 3 seg
+  while (maxScroll <= 8) {
     const initialJobsCount = jobsList.length;
     await scrollBottom();
-    await page.waitForTimeout(1000);
-    maxScroll++;
-  }
+    await page.waitForTimeout(2000);
+    maxScroll++
+  };
 
-  // extraindo os links
-  const newJobLinks = await page.$$eval(
-    ".sc-97da41ab-0.zVzmE > li > div > a",
-    (links) => links.map((link) => link.href)
-  );
-  const companies = await page.$$eval(
-    ".sc-efBctP.dpAAMR.sc-a3bd7ea-6.cQyvth",
-    (el) => el.map((element) => element.innerText)
-  );
-
-  //Depois, as demais informações, fazendo um loop para que vá em cada link buscar as demais informações, 
-  //e também dando push nos nomes das empresas para suas respectivas vagas pelo index
-  for (let i = 0; i < newJobLinks.length; i++) {
-    const link = newJobLinks[i];
-    const company = companies[i];
-
-    await page.goto(link);
-    await page.waitForTimeout(3000);
-
-    const title = await page.$eval('h1', (element) => element.innerText);
-    const publicationDate = await page.$eval(".sc-673bf470-0.fDZpxX > div > p",(element) => element.innerText);
+    // extraindo os links
+    const newJobLinks = await page.$$eval('.sc-97da41ab-0.zVzmE > li > div > a', (links) => links.map((link) => link.href));
+    //const location = await page.$$eval('#__next > div.sc-52106605-1.JIgPc > div > div > main > ul > li:nth-child(1) > div > a > div > div.sc-a3bd7ea-2.cNIcgU > div:nth-child(1) > span', (el) => el.map((element) => element.innerText));
+    const companies = await page.$$eval('.sc-efBctP.dpAAMR.sc-a3bd7ea-6.cQyvth', (el) => el.map((element) => element.innerText));
+  
+    //Depois, as demais informações, fazendo um loop para que vá em cada link buscar as demais informações, e também dando 
+    //push nos nomes das empresas para suas respectivas vagas pelo index
+    for (let i = 0; i < newJobLinks.length; i++) {
+        const link = newJobLinks[i];
+        const company = companies[i]; 
     
-
-    const obj = {
-      company,
-      title,
-      publicationDate,
-      link,
-    };
-
-    // Verificando se o objeto já existe na jobsList
-    const isDuplicate = jobsList.some(
-      (existingObj) => existingObj.link === obj.link
-    );
-
-    if (!isDuplicate) {
-      jobsList.push(obj);
-    }
+        await page.goto(link);
+        await page.waitForTimeout(3000);
+    
+        const title = await page.$eval('h1', (element) => element.innerText);
+        const publicationDate = await page.$eval('.sc-673bf470-2.fWfcGH > p', (element) => element.innerText);
+    
+        const obj = {
+            company,
+            title,
+            publicationDate,
+            link,
+        };    
+  
+  // Verificando se o objeto já existe na jobsList
+  const isDuplicate = jobsList.some(existingObj => 
+    existingObj.link === obj.link
+  );
+  
+  if (!isDuplicate) {
+    jobsList.push(obj);
   }
+};
 
-  // Limitando a 100, já que o código tem pego 109 e me dá aflição.
+  // Limitando a 100
   if (jobsList.length > 100) {
     jobsList.length = 100;
   }
 
-  // Adicionar ao CSV
-  const csvData = jobsList
-    .map((job) => {
-      return Object.values(job)
-        .map((value) => `"${value}"`)
-        .join(",");
-    })
-    .join("\n");
-
+  //Escrevendo as informações no doc CSV
+  const csvData = jobsList.map(job => { return Object.values(job).map(value => `"${value}"`).join(",");}).join("\n");
   fs.writeFileSync("jobs.csv", csvData, "utf8");
 
   await browser.close();
