@@ -7,7 +7,7 @@ const jobsList = [];
 let maxScroll = 0;
 
 (async () => {
-  const browser = await pup.launch({headless: false});
+  const browser = await pup.launch();
   const page = await browser.newPage();
 
   console.log("init");
@@ -41,7 +41,7 @@ let maxScroll = 0;
   }
 
   // Carregar mais vagas até atingir 100 e aguardando carregamento por 3 seg
-  while (maxScroll <= 8) {
+  while (maxScroll <= 10) {
     const initialJobsCount = jobsList.length;
     await scrollBottom();
     await page.waitForTimeout(2000);
@@ -59,27 +59,31 @@ let maxScroll = 0;
         const link = newJobLinks[i];
         const company = companies[i]; 
     
-        await page.goto(link);
-        await page.waitForTimeout(3000);
-    
-        const title = await page.$eval('h1', (element) => element.innerText);
-        const publicationDate = await page.$eval('.sc-673bf470-2.fWfcGH > p', (element) => element.innerText);
-    
-        const obj = {
+        try {
+          await page.goto(link);
+          await page.waitForTimeout(3000);
+  
+          const title = await page.$eval('h1', (element) => element.innerText);
+          const publicationDate = await page.$eval('.sc-673bf470-2.fWfcGH > p', (element) => element.innerText);
+          const location = await page.$eval('.sc-673bf470-5.sc-673bf470-6.dMZQvc.viDKT > span', (element) => element.innerText);
+          const obj = {
             company,
             title,
+            location,
             publicationDate,
             link,
-        };    
+          };
   
-  // Verificando se o objeto já existe na jobsList
-  const isDuplicate = jobsList.some(existingObj => 
-    existingObj.link === obj.link
-  );
+          const isDuplicate = jobsList.some(
+            (existingObj) => existingObj.link === obj.link
+          );
   
-  if (!isDuplicate) {
-    jobsList.push(obj);
-  }
+          if (!isDuplicate) {
+            jobsList.push(obj);
+          }
+        } catch (error) {
+          console.error("Erro ao processar um link:", error.message);
+    }
 };
 
   // Limitando a 100
