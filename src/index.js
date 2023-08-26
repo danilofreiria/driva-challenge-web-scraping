@@ -1,8 +1,9 @@
 import pup from "puppeteer";
 import fs from "fs";
+import {generateId} from "./utils.js";
 
 const url = "https://portal.gupy.io/";
-const searchFor = "desenvolvedor";
+const searchFor = "FullStack";
 const jobsList = [];
 let maxScroll = 0;
 
@@ -67,6 +68,7 @@ let maxScroll = 0;
           const publicationDate = await page.$eval('.sc-673bf470-2.fWfcGH > p', (element) => element.innerText);
           const location = await page.$eval('.sc-673bf470-5.sc-673bf470-6.dMZQvc.viDKT > span', (element) => element.innerText);
           const obj = {
+            id: generateId(),
             company,
             title,
             location,
@@ -93,7 +95,7 @@ let maxScroll = 0;
 
   //Escrevendo as informações no doc CSV
   const csvData = jobsList.map(job => { return Object.values(job).map(value => `"${value}"`).join(",");}).join("\n");
-  fs.writeFileSync("jobs.csv", csvData, "utf8");
+  fs.writeFileSync("./filesCSV/jobsFS.csv", csvData, "utf8");
 
   await browser.close();
   console.log("Everything is done.");

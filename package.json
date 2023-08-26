@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chart.js": "^4.4.0",
     "fs": "^0.0.1-security",
+    "papaparse": "^5.4.1",
     "puppeteer": "^21.1.0"
   }
 }
