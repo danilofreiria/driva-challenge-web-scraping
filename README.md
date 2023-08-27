@@ -51,17 +51,17 @@ O projeto consiste em usar a biblioteca **Puppeteer** para realizar web scraping
    ```
    npm install
    ```
-5. Para coletar dados, execute:
+5. Para coletar dados, edite a constante "searchFor" e o caminho de escrita do arquivo CSV, e execute:
    ```
-   node src/scraper.js
+   node src/index.js
    ```
 6. Para formatar e processar os dados, execute:
    ```
-   node analysis/processData.js
+   node tablesFormat/processData.js.
    ```
 7. Para quantificar os dados e gerar gráficos, execute:
    ```
-   node analysis/quantifyData.js
+   node tablesFormat/quantifyData.js
    ```
 
 ## Estrutura do Repositório
@@ -85,6 +85,6 @@ Os resultados das análises, incluindo gráficos e insights, estão disponíveis
 
 ## Observações
 
-- Este projeto foi desenvolvido como parte do Desafio de Web Scraping da plataforma Driva.
-- Os dados coletados podem estar sujeitos a mudanças na estrutura do site da Gupy.
-- O código foi organizado em várias etapas, desde web scraping até análise e visualização de dados.
+- Este projeto foi desenvolvido como parte do Desafio de Web Scraping como desafio de processo seletivo da Driva;
+- Os dados coletados podem estar sujeitos a mudanças na estrutura do site da Gupy;
+- O código foi organizado em várias etapas, desde web scraping até análise e visualização de dados;
