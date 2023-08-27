@@ -45,7 +45,7 @@
             text-align: center;
             width: 100%;
             max-width: 600px;
-            margin-top: 400px;
+            margin-top: 65%;
         }
 
         .graph-div2 {
@@ -90,14 +90,15 @@
         <h2>Pesquisa por Stack, entre Junho e Agosto de 2023</h2>
         <canvas id="backendFrontendGraph" class="chart-canvas"></canvas>
     </div>
+    <div class="graph-div2">
+        <h2>Pesquisa por cidade, entre as 100 vagas abertas por linguagem</h2>
+        <canvas id="cityJobsGraph" class="chart-canvas"></canvas>
+    </div>
 
     <script>
         const data = {
             tables: [
-                "JAVA", 
-                "PHP", 
-                "Node.js", 
-                "Python "],
+                "JAVA", "PHP", "Node.js", "Python "],
             ids: [100, 62, 34, 33]
         };
 
@@ -106,8 +107,14 @@
             ids: [100, 36, 100]
         };
 
+        const cityJobs = {
+            tables: ["São Paulo", "Brasília", "Porto Alegre", "Barueri", "Rio de Janeiro", "Belo Horizonte"],
+            ids: [188, 29, 23, 21, 18, 14] 
+        };
+
         const ctx = document.getElementById('devGraph').getContext('2d');
         const backFrontCtx = document.getElementById('backendFrontendGraph').getContext('2d');
+        const cityCtx = document.getElementById('cityJobsGraph').getContext('2d');
 
         const commonOptions = {
             responsive: true,
@@ -135,10 +142,10 @@
                     label: 'Quantidade de vagas por Linguagem',
                     data: data.ids,
                     backgroundColor: [
-                        'rgba(194, 0, 17, 0.93)', 
-                        'rgba(104, 31, 162, 0.67)', 
-                        'rgba(10, 160, 17, 0.84)',   
-                        'rgba(235, 244, 5, 0.87)'  
+                        'rgba(194, 0, 17, 0.5)', 
+                        'rgba(104, 31, 162, 0.5)', 
+                        'rgba(10, 160, 17, 0.5)',   
+                        'rgba(235, 244, 5, 0.5)'  
                     ]
                 }]
             },
@@ -153,9 +160,29 @@
                     label: 'Quantidade de vagas por Stack',
                     data: backFront.ids,
                     backgroundColor: [
-                        'rgba(66, 79, 255, 0.43)', 
-                        'rgba(242, 117, 15, 0.84)',
-                        'rgba(3, 183, 158, 0.8) '
+                        'rgba(66, 79, 255, 0.5)', 
+                        'rgba(242, 117, 15, 0.5)',
+                        'rgba(3, 183, 158, 0.5) '
+                    ]
+                }]
+            },
+            options: commonOptions
+        });
+    
+        new Chart(cityCtx, {
+            type: 'bar',
+            data: {
+                labels: cityJobs.tables,
+                datasets: [{
+                    label: 'Quantidade de vagas por cidade',
+                    data: cityJobs.ids,
+                    backgroundColor: [
+                    "rgba(204, 0, 0, 0.5)", 
+                    "rgba(0, 102, 204, 0.5)", 
+                    "rgba(0, 153, 51, 0.5)",
+                    "rgba(255, 153, 0, 0.5)",
+                    "rgba(255, 0, 102, 0.5)", 
+                    "rgba(102, 51, 153, 0.5)", 
                     ]
                 }]
             },
