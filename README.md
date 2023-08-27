@@ -81,7 +81,7 @@ O projeto consiste em usar a biblioteca **Puppeteer** para realizar web scraping
 
 ## Resultados e Insights
 
-Os resultados das análises, incluindo gráficos e insights, estão disponíveis na pasta `graphics/` Rode o arquivo graph.html e acompanhe as tabelas.
+Os resultados das análises, incluindo gráficos e insights, estão disponíveis na pasta `graphics/` Rode o arquivo index.html e acompanhe as tabelas.
 
 ## Observações
 
