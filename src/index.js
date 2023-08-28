@@ -51,7 +51,6 @@ let maxScroll = 0;
 
     // extraindo os links
     const newJobLinks = await page.$$eval('.sc-97da41ab-0.zVzmE > li > div > a', (links) => links.map((link) => link.href));
-    //const location = await page.$$eval('#__next > div.sc-52106605-1.JIgPc > div > div > main > ul > li:nth-child(1) > div > a > div > div.sc-a3bd7ea-2.cNIcgU > div:nth-child(1) > span', (el) => el.map((element) => element.innerText));
     const companies = await page.$$eval('.sc-efBctP.dpAAMR.sc-a3bd7ea-6.cQyvth', (el) => el.map((element) => element.innerText));
   
     //Depois, as demais informações, fazendo um loop para que vá em cada link buscar as demais informações, e também dando 
@@ -59,7 +58,8 @@ let maxScroll = 0;
     for (let i = 0; i < newJobLinks.length; i++) {
         const link = newJobLinks[i];
         const company = companies[i]; 
-    
+      
+        //Usando try/catch para burlar os redirecionamentos da Gupy após 69 links abertos
         try {
           await page.goto(link);
           await page.waitForTimeout(3000);
