@@ -77,11 +77,9 @@ O projeto consiste em usar a biblioteca **Puppeteer** para realizar web scraping
   - `processData.js`: Função para formatar e processar os dados coletados.
   - `quantifyData.js`: Funções para quantificar os dados e identificar tendências.
 
-- **`graphics/`**: Os resultados das análises realizadas são armazenados aqui, incluindo gráficos e insights.
-
 ## Resultados e Insights
 
-Os resultados das análises, incluindo gráficos e insights, estão disponíveis na pasta `graphics/` Rode o arquivo index.html e acompanhe as tabelas.
+Os resultados das análises, incluindo gráficos e insights, estão disponíveis na pasta raiz. Rode o arquivo index.html e acompanhe as tabelas.
 
 ## Observações
 
